@@ -104,55 +104,67 @@
     var scene = SceneJS.createScene({
         nodes:[
             {
-                type:"lookAt",
-                eye: {
-                    x: 0,
-                    y: 30,
-                    z: 50
+                type: "camera",
+                optics: {
+                    type: "perspective",
+                    fovy: 45.0,
+                    aspect: 1.0,
+                    near: 1,
+                    far: 5000.0
                 },
-
-                nodes:[
+                nodes: [
                     {
-                        type: "lights",
-                        lights: [
+                        type:"lookAt",
+                        eye: {
+                            x: 0,
+                            y: 30,
+                            z: 50
+                        },
+
+                        nodes:[
                             {
-                                type: "ambient",
-                                color: {r: 0, g: 0, b: 0}
-                            }
-                        ],
-                        nodes: [
-                            {
-                                type: "flags",
-                                flags: {
-                                    transparent: true
-                                },
+                                type: "lights",
+                                lights: [
+                                    {
+                                        type: "ambient",
+                                        color: {r: 0, g: 0, b: 0}
+                                    }
+                                ],
                                 nodes: [
                                     {
-                                        type:"material",
-                                        alpha: 0,
-                                        nodes:[
+                                        type: "flags",
+                                        flags: {
+                                            transparent: true
+                                        },
+                                        nodes: [
                                             {
-                                                type:"geometry",
-                                                primitive: "triangles",
-                                                positions: new Float32Array([
-                                                    -5000, 0, -5000,
-                                                    -5000, 0, 5000,
-                                                    5000, 0, 5000,
-                                                    5000, 0, -5000
-                                                ]),
-                                                indices: new Uint32Array([
-                                                    0, 1, 2,
-                                                    0, 2, 3
-                                                ])
+                                                type:"material",
+                                                alpha: 0,
+                                                nodes:[
+                                                    {
+                                                        type:"geometry",
+                                                        primitive: "triangles",
+                                                        positions: new Float32Array([
+                                                            -5000, 0, -5000,
+                                                            -5000, 0, 5000,
+                                                            5000, 0, 5000,
+                                                            5000, 0, -5000
+                                                        ]),
+                                                        indices: new Uint32Array([
+                                                            0, 1, 2,
+                                                            0, 2, 3
+                                                        ])
+                                                    }
+                                                ]
                                             }
                                         ]
-                                    }
+                                    },
+                                    {
+                                        id: "planetRoot"
+                                    },
+                                    createStars(2000)
                                 ]
-                            },
-                            {
-                                id: "planetRoot"
-                            },
-                            createStars(1000)
+                            }
                         ]
                     }
                 ]
@@ -479,11 +491,12 @@
 
         code.push("precision highp float;");
         code.push("uniform float time;");
+        code.push("varying vec4 SCENEJS_vViewVertex;");
         code.push("void main() {");
-        code.push("   vec3 pos = gl_FragCoord.xyz;");
+        code.push("   vec2 pos = gl_FragCoord.xy;");
         code.push("   float t = time * 0.001;");
         code.push("   float c = (sin(pos.x * 0.1 + t) + sin(pos.y * 0.1 + t)) * 0.5;")
-        code.push("   c *= pos.z;")
+        code.push("   c *= 1.0 - SCENEJS_vViewVertex.z / -1000.0;")
         code.push("   gl_FragColor = vec4(c, c, c, 1.0);")
         code.push("}");
 
