@@ -244,6 +244,11 @@
     document.addEventListener("mouseup", endClick);
     document.addEventListener("touchend", endClick);
 
+    reload.addEventListener("mousedown", function() {
+        event.stopPropagation();
+        event.preventDefault();
+    });
+
     reload.addEventListener("click", function(event) {
         event.stopPropagation();
         event.preventDefault();
