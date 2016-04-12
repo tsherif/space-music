@@ -347,9 +347,9 @@
 
         node = planet.scale = node.addNode({
             type: "scale",
-            x: size,
-            y: size,
-            z: size
+            x: 1,
+            y: 1,
+            z: 1
         });
 
         planet.material = node = node.addNode({
@@ -415,6 +415,8 @@
             planet.sound = instrument[Math.floor(Math.min(planet.orbitRadius / 40, 0.999) * instrument.length)];
             planets.push(planet);
         };
+
+        planet.setRadius(size);
 
         return planet;
     }
