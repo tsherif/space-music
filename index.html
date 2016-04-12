@@ -16,6 +16,13 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
+<!--
+    Music files by the University of Iowa Musical Instrument Samples
+    http://theremin.music.uiowa.edu/MIS.html
+
+    Reload Icon by The Working Group (http://blog.twg.ca/)
+    Used under Creative Commons licence (Attribution-Share Alike 3.0 Unported)
+ -->
 <html>
 <head>
     <title>3D Web Fest</title>
@@ -26,11 +33,54 @@
         body {
             overflow: hidden;
         }
+
+        .header {
+            position: absolute;
+            text-align: center;
+            color: white;
+            z-index: 1;
+            width: 100%;
+        }
+
+        #title {
+            top: 18%;
+            font-size: 10em;
+            display: none;
+        }
+
+        #author {
+            top: 49.5%;
+            font-size: 3em;
+            display: none;
+        }
+
+        #reload {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1;
+            display: block;
+            width: 32px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-
+<h1 class="header" id="title">Space Music</h1>
+<h2 class="header" id="author">By Tarek Sherif</h2>
+<img id="reload" src="img/reload.png">
 <script>
+
+    // showHeader("title", 1500, 2000, function() {
+    //     setTimeout(function() {
+    //         showHeader("author", 1500, 2000);
+    //     }, 1200);
+    // });
+
+    showHeader("title", 3700, 2000);
+    showHeader("author", 1000, 2000);
+
+    var reload = document.getElementById("reload");
 
     var soundsDirty = true;
     var dirtySounds = [];
@@ -193,6 +243,17 @@
 
     document.addEventListener("mouseup", endClick);
     document.addEventListener("touchend", endClick);
+
+    reload.addEventListener("click", function(event) {
+        event.stopPropagation();
+        event.preventDefault();
+
+        stopAllSounds();
+
+        scene.getNode("planetRoot").removeNodes();
+
+        planets.length = 0;
+    });
 
     function startClick(x, y) {
         if (soundsDirty) {
@@ -367,14 +428,23 @@
         soundsDirty = false;
     }
 
+    function stopAllSounds() {
+        for (var i = 0, len = sounds.length; i < len; i++) {
+            var instrument = sounds[i];
+            for (var j = 0, lenj = instrument.length; j < lenj; j++) {
+                instrument[j].stopAll();
+            }
+        }
+    }
+
     function getSound(name, volume) {
         var url = "audio/" + name + ".mp3";
 
-        var sound = {};
+        var soundContainer = {};
 
         var sounds = [];
 
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < 5; i++) {
             sounds.push(fetchSound(url, volume));
         }
 
@@ -388,7 +458,7 @@
             numPlayingSounds--;
         }
 
-        sound.play = function() {
+        soundContainer.play = function() {
             for (var i = 0, len = sounds.length; i < len; i++) {
                 var sound = sounds[i];
                 if (!playingSounds[i]) {
@@ -399,7 +469,7 @@
                     sound.onended = function() {
                         endSound(sound, i);
                     }
-                    if (len - numPlayingSounds <= 1) {
+                    if (len - numPlayingSounds <= 2) {
                         sounds.push(fetchSound(url, volume));
                     }
                     break;
@@ -407,7 +477,13 @@
             }
         };
 
-        return sound;
+        soundContainer.stopAll = function() {
+            for (var i = 0, len = sounds.length; i < len; i++) {
+                endSound(sounds[i], i);
+            }
+        };
+
+        return soundContainer;
     }
 
     function fetchSound(url, volume) {
@@ -509,6 +585,31 @@
         code.push("}");
 
         return code.join("\n");
+    }
+
+    function showHeader(id, showTime, fadeTime, ok) {
+        var element = document.getElementById(id);
+        element.style.display = "block";
+        setTimeout(function() {
+            fadeOut(element, fadeTime, ok);
+        }, showTime);
+    }
+
+    function fadeOut(element, duration, ok) {
+        var opacity = element.style.opacity || 1.0;
+        var inc = 20 / duration;
+        (function step() {
+            element.style.opacity = opacity;
+            opacity -= inc;
+            if (opacity <= 0) {
+                element.style.display = "none";
+                if (ok) {
+                    ok();
+                }
+            } else {
+                setTimeout(step, 20);
+            }
+        })();
     }
 
 </script>
