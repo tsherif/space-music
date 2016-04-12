@@ -65,21 +65,29 @@
             // "CelloD2.flat",
             // "CelloD2",
             // "CelloE2.flat",
-            "CelloE2",
-            "CelloF2",
-            "CelloG2.flat",
-            "CelloG2",
-            "CelloA2.flat",
-            "CelloA2",
-            "CelloB2.flat",
-            "CelloB2",
+            // "CelloE2",
+            // "CelloF2",
+            // "CelloG2.flat",
+            // "CelloG2",
+            // "CelloA2.flat",
+            // "CelloA2",
+            // "CelloB2.flat",
+            // "CelloB2",
+            "BaseA2.flat",
+            "BaseD2.flat",
+            "BaseD2",
+            "BaseE2.flat",
+            "BaseE2",
+            "BaseF2",
+            "BaseG2.flat",
+            "BaseG2"
         ]
     ];
 
     var instrumentVolumes = [
+        1,
         0.4,
-        0.15,
-        0.13
+        1
     ];
 
     var planets = [];
@@ -411,36 +419,6 @@
         return sound;
     }
 
-    function getShaderCode() {
-        var code = [];
-        code.push("uniform mat4 SCENEJS_uMMatrix;");
-        code.push("uniform float time;");
-        code.push("uniform vec3 color1;");
-        code.push("uniform vec3 color2;");
-        code.push("uniform float xFrequency;");
-        code.push("uniform float yFrequency;");
-        code.push("uniform float zFrequency;");
-
-        code.push("vec4  planetViewPos;");
-        code.push("void viewPosFunction(vec4 viewPos) {");
-        code.push("    planetViewPos = viewPos;");
-        code.push("}");
-        code.push("vec4 colorFunction(vec4 color) {");
-        code.push("    vec3 pos = SCENEJS_vVertex.xyz;");
-        code.push("    float c =  0.5 * sin(pos.x * xFrequency);");
-        code.push("    c +=       sin(pos.y * yFrequency);");
-        code.push("    c +=       0.2 * sin(pos.z * zFrequency);");
-        code.push("    c +=       0.5 * sin(time * 0.001);")
-        code.push("    c /= 3.0;");
-        code.push("    vec3 baseColor = c > 0.0 ? color1 : color2;");
-        code.push("    c = abs(c);")
-        code.push("    color.rgb = baseColor.rgb * c + SCENEJS_uMaterialEmitColor * SCENEJS_uMaterialEmit;");
-        code.push("    return color;");
-        code.push("}")
-
-        return code.join("\n");
-    }
-
     function createStars(n) {
         var positions = new Float32Array(n * 3);
         var indices = new Uint32Array(n);
@@ -486,6 +464,36 @@
         return shader;
     }
 
+    function getShaderCode() {
+        var code = [];
+        code.push("uniform mat4 SCENEJS_uMMatrix;");
+        code.push("uniform float time;");
+        code.push("uniform vec3 color1;");
+        code.push("uniform vec3 color2;");
+        code.push("uniform float xFrequency;");
+        code.push("uniform float yFrequency;");
+        code.push("uniform float zFrequency;");
+
+        code.push("vec4  planetViewPos;");
+        code.push("void viewPosFunction(vec4 viewPos) {");
+        code.push("    planetViewPos = viewPos;");
+        code.push("}");
+        code.push("vec4 colorFunction(vec4 color) {");
+        code.push("    vec3 pos = SCENEJS_vVertex.xyz;");
+        code.push("    float c =  0.5 * sin(pos.x * xFrequency);");
+        code.push("    c +=       sin(pos.y * yFrequency);");
+        code.push("    c +=       0.2 * sin(pos.z * zFrequency);");
+        code.push("    c +=       0.5 * sin(time * 0.001);")
+        code.push("    c /= 3.0;");
+        code.push("    vec3 baseColor = c > 0.0 ? color1 : color2;");
+        code.push("    c = abs(c);")
+        code.push("    color.rgb = baseColor.rgb * c + SCENEJS_uMaterialEmitColor * SCENEJS_uMaterialEmit;");
+        code.push("    return color;");
+        code.push("}")
+
+        return code.join("\n");
+    }
+
     function getStarCode() {
         var code = [];
 
@@ -494,7 +502,7 @@
         code.push("varying vec4 SCENEJS_vViewVertex;");
         code.push("void main() {");
         code.push("   vec2 pos = gl_FragCoord.xy;");
-        code.push("   float t = time * 0.001;");
+        code.push("   float t = time * 0.0005;");
         code.push("   float c = (sin(pos.x * 0.1 + t) + sin(pos.y * 0.1 + t)) * 0.5;")
         code.push("   c *= 1.0 - SCENEJS_vViewVertex.z / -1000.0;")
         code.push("   gl_FragColor = vec4(c, c, c, 1.0);")
