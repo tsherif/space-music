@@ -271,16 +271,14 @@
         event.preventDefault();
     });
 
-    reload.addEventListener("click", function(event) {
+    reload.addEventListener("touchstart", function() {
         event.stopPropagation();
         event.preventDefault();
-
-        stopAllSounds();
-
-        scene.getNode("planetRoot").removeNodes();
-
-        planets.length = 0;
     });
+
+    reload.addEventListener("mouseup", reset);
+
+    reload.addEventListener("touchend", reset);
 
     function startClick(x, y) {
         if (soundsDirty) {
@@ -304,6 +302,17 @@
             newPlanet.init();
             newPlanet = null;
         }
+    }
+
+    function reset() {
+        event.stopPropagation();
+        event.preventDefault();
+
+        stopAllSounds();
+
+        scene.getNode("planetRoot").removeNodes();
+
+        planets.length = 0;
     }
 
     scene.on("tick", function() {
